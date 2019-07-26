@@ -1,0 +1,6 @@
+vendor/
+.vscode/
+rich_webb/*
+!rich_webb/
+test.php
+test-ffmpeg

@@ -1,0 +1,4 @@
+{
+    "phpcs.standard": "PSR1",
+    "php-cs-fixer.rules": "@PSR1, @PSR2, @Symfony, @PhpCsFixer"
+}
