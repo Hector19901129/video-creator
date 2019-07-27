@@ -120,7 +120,7 @@ $(document).ready(function () {
     el_vid = this.parentNode;
     var videoFile = $(this).prev().find("source").attr("src");
     var start_time = parseFloat( $(el_vid).find('#saved-start-time').val() );
-    var end_time = parseFloat( parseFloat( $(el_vid).find('#saved-start-time').val() ) + parseFloat( $(el_vid).find('#duration').val() ) );
+    var end_time = parseFloat( $(el_vid).find('#saved-end-time').val() );
     if (start_time === NaN || end_time === NaN) {
         video.src({type: 'video/mp4', src: videoFile});
     } else {
@@ -130,7 +130,7 @@ $(document).ready(function () {
         video.src({type: 'video/mp4', src: videoFile});
         setTimeout(function(){ 
             video.markers.reset([{ time: start_time, text: "start"}, { time: end_time, text: "end"}]);
-        }, 100);
+        }, 500);
     }
   });
   
@@ -156,7 +156,7 @@ $(document).ready(function () {
         alert("Set time correctly!");
     } else {
         $(el_vid).find('#saved-start-time').val(start_time);
-        $(el_vid).find('#duration').val(end_time - start_time);
+        $(el_vid).find('#saved-end-time').val(end_time);
         $(el_vid).find('.image-overlay-text > span').text($('#overlay-video-text').val());
     }
   });
@@ -183,7 +183,7 @@ $(document).ready(function () {
             images[parseInt($(this).find('.wrapper > div').text())-1] = {
                 'src': $(this).find('source').attr('src'),
                 'start_time': $(this).find('#saved-start-time').val(),
-                'duration': $(this).find('#duration').val(),
+                'end_time': $(this).find('#saved-end-time').val(),
                 'overlay_text': $(this).find('.image-overlay-text > span').text()
             };
         }

@@ -190,7 +190,7 @@
                                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                                     </a>
                                     <input type="input" value="" id="saved-start-time">
-                                    <input type="input" value="" id="duration">
+                                    <input type="input" value="" id="saved-end-time">
                                     <div class="wrapper">
                                         <div class="wraperNumber">1</div>
                                     </div>
