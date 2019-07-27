@@ -91,8 +91,6 @@
             </script>";
         }
     }
-    var_dump($videos);
-    var_dump($images);
 ?>
 
 <html lang="en">
@@ -189,8 +187,8 @@
                                     <a class="add-video">
                                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                                     </a>
-                                    <input type="input" value="" id="saved-start-time">
-                                    <input type="input" value="" id="saved-end-time">
+                                    <input type="hidden" value="" id="saved-start-time">
+                                    <input type="hidden" value="" id="saved-end-time">
                                     <div class="wrapper">
                                         <div class="wraperNumber">1</div>
                                     </div>

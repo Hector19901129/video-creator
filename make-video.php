@@ -74,6 +74,17 @@ function get_zoompan_filter($animation, $seconds, $index, $result, $image_vid)
     }
 }
 
+function get_trim_filter($start_time, $end_time, $index, $result, $image_vid) {
+    if($result === false){
+        $filter = "trim=start=".$start_time.":end=".$end_time.",setpts=PTS-STARTPTS".$image_vid;
+        return $filter;
+    }
+    else {
+        $filter = "trim=start=".$start_time.":end=".$end_time.",setpts=PTS-STARTPTS[zoompan".$index."]";
+        return $filter;
+    }
+}
+
 function get_text_filter($text, $index_of_input, $i)
 {
     return 
@@ -404,7 +415,7 @@ $slide_len = 0;
 $overlay_image_index_array = [];
 $overlay_image_index = -1;
 $src_image_index_array = [];
-
+$frame_rate = 11;
 $bg_rgb_color = setBgColor($param->select_bg_color);
 makePaddingImage(16, 32, setBgColor(1), "./".$user_id."/temp/overlay_padding.png");
 var_dump($param->images);
@@ -436,22 +447,46 @@ for ($i = 0; $i < count($param->images); ++$i) {
         $image_vid = '[slide_out_0]';
         $slide_len = 11 * $param->select_per_frame;
     }
-    array_push(
-        $filters,
-        '['.$src_image_index_array[$i].']'.get_zoompan_filter(
-            $param->images[$i]->animation,
-            $param->select_per_frame,
-            $i, $result, $image_vid
-    )
-    );
+
+    if (strpos($param->images[$i]->src, 'mp4') !== false) {
+        $cmd = "ffmpeg -i ".$param->images[$i]->src;
+        $arr = explode(" ", $cmd);
+        foreach ($arr as $key => $value) {
+            if ($value == "fps") {
+                $frame_rate = $arr[$key - 1];
+            }
+        }
+        var_dump($frame_rate);
+        array_push($filters, '['.$src_image_index_array[$i].']'.get_trim_filter(
+                $param->images[$i]->start_time,
+                $param->images[$i]->end_time,
+                $i, $result, $image_vid
+            )
+        );
+    } else {
+        array_push(
+            $filters,
+            '['.$src_image_index_array[$i].']'.get_zoompan_filter(
+                $param->images[$i]->animation,
+                $param->select_per_frame,
+                $i, $result, $image_vid
+            )
+        );
+    }
     if($result !== false){
         array_push($filters, get_text_filter($param->images[$i]->overlay_text, $overlay_image_index_array[$i], $i).$image_vid);
     }
     
 
     if ($i > 0) {
-        merge_videos_with_slide_effect('[slide_out_'.($i - 1).']', $slide_len, $image_vid, 11 * $param->select_per_frame, $i);
-        $slide_len += 11 * $param->select_per_frame - 5;
+        if (strpos($param->images[$i]->src, 'mp4') !== false){
+            merge_videos_with_slide_effect('[slide_out_'.($i - 1).']', $slide_len, $image_vid, $frame_rate * ($param->images[$i]->end_time - $param->images[$i]->start_time), $i);
+            $slide_len += $frame_rate * ($param->images[$i]->end_time - $param->images[$i]->start_time) - 5;
+        } else {
+            merge_videos_with_slide_effect('[slide_out_'.($i - 1).']', $slide_len, $image_vid, 11 * $param->select_per_frame, $i);
+            $slide_len += 11 * $param->select_per_frame - 5;
+        }
+        
         if($i<count($param->images)-1)
         {
             set_name_to_last("[slide_out_{$i}]");
