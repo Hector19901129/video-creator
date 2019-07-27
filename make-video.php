@@ -407,7 +407,7 @@ $src_image_index_array = [];
 
 $bg_rgb_color = setBgColor($param->select_bg_color);
 makePaddingImage(16, 32, setBgColor(1), "./".$user_id."/temp/overlay_padding.png");
-var_dump()
+var_dump($param->images);
 for ($i = 0; $i < count($param->images); ++$i) {
     array_push($inputs, '-i "'.dirname(__FILE__).'/'.$param->images[$i]->src.'"');
     $overlay_image_index ++;
