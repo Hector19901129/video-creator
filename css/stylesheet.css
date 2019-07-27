@@ -131,6 +131,12 @@ a.add-video {
   clear: both;
 }
 
+#uploadContainerVideo>div:nth-child(4n+1) {
+    clear: both;
+}
+.display-none {
+    display: none;
+}
 .fancy {
     text-align: center;
   }
@@ -154,6 +160,10 @@ a.add-video {
   .fancy span:after {
     left: 100%;
     margin-left: 15px;
+  }
+  .example_video_1-dimensions {
+    width: 568px;
+    height: 360px;
   }
 
 @media only screen and (max-width:575.9px) {

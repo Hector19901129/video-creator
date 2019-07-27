@@ -27,9 +27,15 @@
     delete_directory($user_id . '/videos');
 
     require 'fetching_images.php';
-    $path = "${user_id}/images/";
-    $fi = new FilesystemIterator($path, FilesystemIterator::SKIP_DOTS);
-    $loop = iterator_count($fi);
+    $image_path = "${user_id}/images/";
+    $video_path = "${user_id}/videos/";
+    $fi = new FilesystemIterator($image_path, FilesystemIterator::SKIP_DOTS);
+    $iloop = iterator_count($fi);
+    $images = array();
+
+    $fi = new FilesystemIterator($video_path, FilesystemIterator::SKIP_DOTS);
+    $vloop = iterator_count($fi);
+    $videos = array();
 
 	$dir_audio = 'audio';
     $afi = new FilesystemIterator($dir_audio, FilesystemIterator::SKIP_DOTS);
@@ -38,7 +44,6 @@
     if (isset($_POST['upload_images'])) {
         // File upload configuration
         $insertValues = '';
-        $targetDir = "${user_id}/images/";
         $allowTypes = ['jpg', 'mp4'];
         
         // print_r($_FILES['upload-images']['name']);
@@ -47,13 +52,19 @@
         $statusMsg = $errorMsg = $errorUpload = $errorUploadType = '';
         if (!empty(array_filter($_FILES['upload-images']['name']))) {
             foreach ($_FILES['upload-images']['name'] as $key => $val) {
-                ++$loop;
+                
                 $filename = $val;
                 $ext = pathinfo($filename, PATHINFO_EXTENSION);
                 if ($ext == "mp4") {
-                    $fileName = 'vid'.$loop.'.mp4';
+                    ++$vloop;
+                    $fileName = 'vid'.$vloop.'.mp4';
+                    $targetDir = $video_path;
+                    array_push($videos, $fileName);
                 } else {
-                    $fileName = 'pic'.$loop.'.jpg';
+                    ++$iloop;
+                    $fileName = 'pic'.$iloop.'.jpg';
+                    $targetDir = $image_path;
+                    array_push($images, $fileName);
                 }
                 $targetFilePath = $targetDir.$fileName;
                 // die(var_dump($targetFilePath));
@@ -74,17 +85,14 @@
 						</script>";
                 }
             }
-
             // Display status message
             echo "<script>
 				alert('Images Uploaded Successfully');
             </script>";
-            
         }
     }
-    $file_names = array_diff(scandir($path, 1), array('.', '..'));
-    var_dump($file_names);
-   
+    var_dump($videos);
+    var_dump($images);
 ?>
 
 <html lang="en">
@@ -104,8 +112,9 @@
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/4.5.2/css/fileinput.css" />
 	<link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css">
-
-	<link rel="stylesheet" href="stylesheet.css">
+    <link rel="stylesheet" href="css/videojs.markers.min.css">
+    <link rel="stylesheet" href="css/video-js.min.css">
+	<link rel="stylesheet" href="css/stylesheet.css">
 
 </head>
 
@@ -145,34 +154,31 @@
 					<div class="card p-3">
 						<h6 class="text-capitalize">1. Choose your image</h6>
 						<div class="row" id="uploadContainer">
-                            <?php	for ($i = 1; $i <= $loop; ++$i) { ?>
-                                <?php if (substr($file_names[$i - 1], -3) == "jpg") { ?>
-                                    <div class="image-panel col-4 col-sm-3 mt-2" overlay-text="" effect="zoom-in">
-                                        <img src="<?php echo $user_id; ?>/images/pic<?php echo $i; ?>.jpg"
-                                            val="<?php echo $user_id; ?>/images/pic<?php echo $i; ?>.jpg"
-                                            class="img-thumbnail" />
-                                        <a class="edit-image" data-toggle="modal" href="#modal-image-edit">
-                                            <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
-                                        </a>
-                                        <div class="wrapper">
-                                            <div class="wraperNumber">1</div>
-                                        </div>
-                                        <p class="image-animation">
-                                            <i class="fas fa-external-link-alt"></i>
-                                            <span value="slow-zoom">Slow zoon<span>
-                                        </p>
-                                        <p class="image-overlay-text"><i class="fas fa-text-height"></i><span><span></p>
+                            <?php	for ($i = 1; $i <= $iloop; ++$i) { ?>
+                                <div class="image-panel col-4 col-sm-3 mt-2" overlay-text="" effect="zoom-in">
+                                    <img src="<?php echo $user_id; ?>/images/pic<?php echo $i; ?>.jpg"
+                                        val="<?php echo $user_id; ?>/images/pic<?php echo $i; ?>.jpg"
+                                        class="img-thumbnail" />
+                                    <a class="edit-image" data-toggle="modal" href="#modal-image-edit">
+                                        <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                                    </a>
+                                    <div class="wrapper">
+                                        <div class="wraperNumber">1</div>
                                     </div>
-                                <?php } ?>
+                                    <p class="image-animation">
+                                        <i class="fas fa-external-link-alt"></i>
+                                        <span value="slow-zoom">Slow zoom<span>
+                                    </p>
+                                    <p class="image-overlay-text"><i class="fas fa-text-height"></i><span><span></p>
+                                </div>
 							<?php } ?>
                         </div>
-                        <p class="subtitle fancy"><span>Video Clips</span></p>
-                        <div class="row" id="uploadContainer">
-                            <?php	for ($i = 1; $i <= $loop; ++$i) { ?>
-                                <?php if (substr($file_names[$i - 1], -3) == "mp4") { ?>
+                        <p class="subtitle fancy <?php if ($vloop == 0) echo "display-none"?>"><span>Video Clips</span></p>
+                        <div class="row" id="uploadContainerVideo">
+                            <?php	for ($i = 1; $i <= $vloop; ++$i) { ?>
                                 <div class="image-panel col-4 col-sm-3 mt-2" overlay-text="" effect="zoom-in">
                                     <video class="img-thumbnail">
-                                        <source src="<?php echo $user_id; ?>/images/<?php echo $file_names[$i - 1]; ?>" type="video/mp4">
+                                        <source src="<?php echo $user_id; ?>/videos/vid<?php echo $i; ?>.mp4" type="video/mp4">
                                         <div class="file-preview-other">
                                             <span class="file-other-icon"><i class="glyphicon glyphicon-file"></i></span>
                                         </div>
@@ -183,15 +189,16 @@
                                     <a class="add-video">
                                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                                     </a>
+                                    <input type="input" value="" id="saved-start-time">
+                                    <input type="input" value="" id="duration">
                                     <div class="wrapper">
                                         <div class="wraperNumber">1</div>
                                     </div>
-                                    <p class="image-animation"><i class="fas fa-external-link-alt"></i><span
+                                    <!-- <p class="image-animation"><i class="fas fa-external-link-alt"></i><span
                                             value="slow-zoom">Slow zoon<span>
-                                    </p>
+                                    </p> -->
                                     <p class="image-overlay-text"><i class="fas fa-text-height"></i><span><span></p>
                                 </div>
-                                <?php } ?>
 							<?php } ?>
                         </div>
 					</div>
@@ -321,7 +328,7 @@
 
 	</div>
 
-	<!-- Modal -->
+	<!-- Image Modal -->
 	<div class="modal fade" id="modal-image-edit" role="dialog">
 		<div class="modal-dialog">
 
@@ -356,11 +363,55 @@
 				</div>
 			</div>
 		</div>
+    </div>
+    
+    <!-- Video Modal -->
+    <div class="modal fade" id="modal-video-edit" role="dialog">
+		<div class="modal-dialog">
+
+			<!-- Modal content-->
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4>Edit Animation</h4>
+				</div>
+				<div class="modal-body">
+					<form role="form">
+						<div class="form-group">
+							<label for="animation">Animation</label>
+							<video autoplay class="video-js vjs-default-skin" controls="" data-setup='{"width": 568, "height": 360, "autoplay": true}' height="360" id="video-active" preload="auto" width="568px">
+                                <source src="" type="video/mp4"/>
+                            </video>
+                        </div>
+                        <div class="form-group">
+							<label for="overlay-text">Start time(second)</label>
+							<input type="text" class="form-control" id="start-time" disabled>
+                        </div>
+                        <div class="form-group">
+							<label for="overlay-text">End time(second)</label>
+							<input type="text" class="form-control" id="end-time" disabled>
+						</div>
+						<div class="form-group">
+							<label for="overlay-text">Overlay Text</label>
+							<input type="text" class="form-control" id="overlay-video-text">
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+                    <button id="set-start-time" type="button" class="btn btn-default">Set Start</button>
+                    <button id="set-end-time" type="button" class="btn btn-default">Set End</button>
+					<button id="animation-video-submit" type="submit" class="btn btn-default" data-dismiss="modal">Save</button>
+					<button type="submit" class="btn btn-default" data-dismiss="modal">Cancel</button>
+				</div>
+			</div>
+		</div>
 	</div>
 
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-	<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/4.5.2/js/fileinput.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/4.5.2/js/fileinput.js"></script>
+    <script src="js/video.min.js"></script>
+    <script src="js/videojs-markers.min.js"></script>
 	<script src="js/app.js"></script>
 
 </body>

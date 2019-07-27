@@ -164,7 +164,7 @@ function merge_videos_with_slide_effect($vid1, $len1, $vid2, $len2, $i)
     array_push($filters, $vid11_1.$slide_overlay1.$vid21_2.'concat=n=3');
 }
 function adjustBottom($text) {
-    $rg = "/f|g|j|p|q|y|@/";
+    $rg = "/g|j|p|q|y|@/";
     if ( preg_match($rg, $text) ) {
         return 2.0;
     } else {
@@ -407,6 +407,7 @@ $src_image_index_array = [];
 
 $bg_rgb_color = setBgColor($param->select_bg_color);
 makePaddingImage(16, 32, setBgColor(1), "./".$user_id."/temp/overlay_padding.png");
+var_dump()
 for ($i = 0; $i < count($param->images); ++$i) {
     array_push($inputs, '-i "'.dirname(__FILE__).'/'.$param->images[$i]->src.'"');
     $overlay_image_index ++;
