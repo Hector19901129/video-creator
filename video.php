@@ -1,7 +1,7 @@
 <?php
 require "general.php";
 
-$file = $user_id . '/output_video.mp4';
+$file = 'users/' .$user_id . '/output_video.mp4';
 
 if (file_exists($file)) {
     header('Content-Description: File Transfer');

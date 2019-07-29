@@ -4,22 +4,6 @@ namespace Emojione;
 // include the PHP library (if not autoloaded)
 require('vendor/emojione/emojione/lib/php/autoload.php');
 
-require 'general.php';
-
-$folder = "./".$user_id.'/temp';
-
-//Get a list of all of the file names in the folder.
-$files = glob($folder . '/*');
- 
-//Loop through the file list.
-foreach($files as $file){
-    //Make sure that this is a file and not a directory.
-    if(is_file($file)){
-        //Use the unlink function to delete the file.
-        unlink($file);
-    }
-}
-
 function escape_text($text)
 {
     $text = str_replace('"', '\"', $text);
@@ -298,7 +282,7 @@ function textToArray($text){
     }
     return false;
 }
-function arrayToImage($array, $target_filename, $bg_rgb_color, $font_size, $user_id){
+function arrayToImage($array, $target_filename, $bg_rgb_color, $font_size, $user_loc){
     if($array[0] !== ""){
         if(strpos($array[0], "https://cdn") !== false){
             
@@ -332,7 +316,7 @@ function arrayToImage($array, $target_filename, $bg_rgb_color, $font_size, $user
                 concatenateTwoImages($target_filename, $item, $bg_rgb_color,$font_size);
             }
             else{
-                $temp_file = "./".$user_id."/temp/text.png"; // temporary image step by step
+                $temp_file = "./".$user_loc."/temp/text.png"; // temporary image step by step
                 textToImage($item, $font_size, $bg_rgb_color, $temp_file);
                 concatenateTwoImages($target_filename, $temp_file, $bg_rgb_color,$font_size);
             }
@@ -341,13 +325,13 @@ function arrayToImage($array, $target_filename, $bg_rgb_color, $font_size, $user
     return true;
 }
 
-function textToFinalImage($text, $bg_rgb_color, $font_size, $target_filename, $user_id){
+function textToFinalImage($text, $bg_rgb_color, $font_size, $target_filename, $user_loc){
     $array = textToArray($text);
     if($array === false){
         return false;
     }
 
-    arrayToImage($array, $target_filename, $bg_rgb_color, $font_size, $user_id);
+    arrayToImage($array, $target_filename, $bg_rgb_color, $font_size, $user_loc);
 }
 function setBgColor($bg_color) {
     if($bg_color == 1) {
@@ -408,6 +392,25 @@ if (0 == count($param->images)) {
 }
 
 
+$user_id = $param->user_id;
+$vid_dir = $param->vid_dir;
+$user_loc = $vid_dir."/".$user_id;
+var_dump($user_loc);
+
+$folder = $user_loc.'/temp';
+
+//Get a list of all of the file names in the folder.
+$files = glob($folder . '/*');
+ 
+//Loop through the file list.
+foreach($files as $file){
+    //Make sure that this is a file and not a directory.
+    if(is_file($file)){
+        //Use the unlink function to delete the file.
+        unlink($file);
+    }
+}
+
 $inputs = [];
 $filters = [];
 
@@ -417,21 +420,21 @@ $overlay_image_index = -1;
 $src_image_index_array = [];
 $frame_rate = 11;
 $bg_rgb_color = setBgColor($param->select_bg_color);
-makePaddingImage(16, 32, setBgColor(1), "./".$user_id."/temp/overlay_padding.png");
+makePaddingImage(16, 32, setBgColor(1), "./".$user_loc."/temp/overlay_padding.png");
 var_dump($param->images);
 for ($i = 0; $i < count($param->images); ++$i) {
     array_push($inputs, '-i "'.dirname(__FILE__).'/'.$param->images[$i]->src.'"');
     $overlay_image_index ++;
     array_push($src_image_index_array, $overlay_image_index);
     
-    $result = textToFinalImage($param->images[$i]->overlay_text, array("r" => 0, "g" => 0, "b" => 0), 28, "./".$user_id."/temp/overlay".$i.".png", $user_id);
+    $result = textToFinalImage($param->images[$i]->overlay_text, array("r" => 0, "g" => 0, "b" => 0), 28, "./".$user_loc."/temp/overlay".$i.".png", $user_loc);
     if($param->images[$i]->overlay_text !== ''){
-        makefinalOverlayImage('./'.$user_id.'/temp/overlay_padding.png', "./".$user_id."/temp/overlay".$i.".png", setBgColor(1));
+        makefinalOverlayImage('./'.$user_loc.'/temp/overlay_padding.png', "./".$user_loc."/temp/overlay".$i.".png", setBgColor(1));
     }
 
     if($result !== false){
         
-        array_push($inputs, '-i "'.dirname(__FILE__).'/'.$user_id.'/temp/overlay'.$i.'.png"');
+        array_push($inputs, '-i "'.dirname(__FILE__).'/'.$user_loc.'/temp/overlay'.$i.'.png"');
         $overlay_image_index ++;
         array_push($overlay_image_index_array, $overlay_image_index);
     }else{
@@ -449,7 +452,7 @@ for ($i = 0; $i < count($param->images); ++$i) {
     }
 
     if (strpos($param->images[$i]->src, 'mp4') !== false) {
-        $cmd = "ffmpeg -i ".$param->images[$i]->src;
+        $cmd = "/usr/local/bin/ffmpeg -i ".$param->images[$i]->src;
         $arr = explode(" ", $cmd);
         foreach ($arr as $key => $value) {
             if ($value == "fps") {
@@ -496,15 +499,15 @@ for ($i = 0; $i < count($param->images); ++$i) {
 
 if ('' != $param->top_bar_text) {
     // $bg_rgb_color = setBgColor($param->select_bg_color);
-    $result = textToFinalImage($param->top_bar_text, $bg_rgb_color, 32, "./".$user_id."/temp/top_bar.png", $user_id);
-    array_push($inputs, '-i "'.dirname(__FILE__).'/'.$user_id.'/temp/top_bar.png"');
+    $result = textToFinalImage($param->top_bar_text, $bg_rgb_color, 32, "./".$user_loc."/temp/top_bar.png", $user_loc);
+    array_push($inputs, '-i "'.dirname(__FILE__).'/'.$user_loc.'/temp/top_bar.png"');
     $overlay_image_index ++;
     array_push($filters, get_top_bar_text_filter($param->top_bar_text, $overlay_image_index, $param->select_bg_color));
 }
 if ('' != $param->bottom_bar_text) {
     // $bg_rgb_color = setBgColor($param->select_bg_color);
-    $result = textToFinalImage($param->bottom_bar_text, $bg_rgb_color, 32, "./".$user_id."/temp/bottom_bar.png", $user_id);
-    array_push($inputs, '-i "'.dirname(__FILE__).'/'.$user_id.'/temp/bottom_bar.png"');
+    $result = textToFinalImage($param->bottom_bar_text, $bg_rgb_color, 32, "./".$user_loc."/temp/bottom_bar.png", $user_loc);
+    array_push($inputs, '-i "'.dirname(__FILE__).'/'.$user_loc.'/temp/bottom_bar.png"');
     $overlay_image_index ++;
     array_push($filters, get_bottom_bar_text_filter($param->bottom_bar_text, $overlay_image_index, $param->select_bg_color));
 }
@@ -518,8 +521,8 @@ if ('' != $param->end_screen_text || $param->your_brand_name) {
     if ('' != $param->end_screen_text) {
         //$param->end_screen_text = escape_text($param->end_screen_text);
         // $bg_rgb_color = setBgColor($param->select_bg_color);
-        $result = textToFinalImage($param->end_screen_text, $bg_rgb_color, 42, "./".$user_id."/temp/end.png", $user_id);
-        array_push($inputs, '-i "'.dirname(__FILE__).'/'.$user_id.'/temp/end.png"');
+        $result = textToFinalImage($param->end_screen_text, $bg_rgb_color, 42, "./".$user_loc."/temp/end.png", $user_loc);
+        array_push($inputs, '-i "'.dirname(__FILE__).'/'.$user_loc.'/temp/end.png"');
         $overlay_image_index ++;
         array_push($filters, "[end][".$overlay_image_index.":v]overlay=(main_w-overlay_w)/2:main_h/2-overlay_h-28");
         if ('' != $param->your_brand_name) {
@@ -528,8 +531,8 @@ if ('' != $param->end_screen_text || $param->your_brand_name) {
             //$param->your_brand_name = escape_text($param->your_brand_name);
             //var_dump($param->your_brand_name);
             // $bg_rgb_color = array("r" => 0, "g" => 0, "b" => 0);
-            $result = textToFinalImage($param->your_brand_name, $bg_rgb_color, 32, "./".$user_id."/temp/brand.png", $user_id);
-            array_push($inputs, '-i "'.dirname(__FILE__).'/'.$user_id.'/temp/brand.png"');
+            $result = textToFinalImage($param->your_brand_name, $bg_rgb_color, 32, "./".$user_loc."/temp/brand.png", $user_loc);
+            array_push($inputs, '-i "'.dirname(__FILE__).'/'.$user_loc.'/temp/brand.png"');
             $overlay_image_index ++;
             array_push($filters, "[brand][".$overlay_image_index.":v]overlay=(main_w-overlay_w)/2:main_h/2");
             set_name_to_last('[credit_vid]');
@@ -549,8 +552,8 @@ if ('' != $param->end_screen_text || $param->your_brand_name) {
         if ('' != $param->your_brand_name) {
             //$param->your_brand_name = escape_text($param->your_brand_name);
             // $bg_rgb_color = array("r" => 0, "g" => 0, "b" => 0);
-            $result = textToFinalImage($param->your_brand_name, $bg_rgb_color, 32, "./".$user_id."/temp/brand.png", $user_id);
-            array_push($inputs, '-i "'.dirname(__FILE__).'/'.$user_id.'/temp/brand.png"');
+            $result = textToFinalImage($param->your_brand_name, $bg_rgb_color, 32, "./".$user_loc."/temp/brand.png", $user_loc);
+            array_push($inputs, '-i "'.dirname(__FILE__).'/'.$user_loc.'/temp/brand.png"');
             $overlay_image_index ++;
             array_push($filters, "[end][".$overlay_image_index.":v]overlay=(main_w-overlay_w)/2:main_h/2");
             set_name_to_last('[credit_vid]');
@@ -575,7 +578,7 @@ if ('Select audio file' != $param->select_sound) {
 }
 
 
-$cmd = 'ffmpeg -y '.implode(' ', $inputs).' -filter_complex "'.$filter_string.'" '.$maps." -shortest -strict -2 ${user_id}/output_video.mp4 2>&1";
+$cmd = 'ffmpeg -y '.implode(' ', $inputs).' -filter_complex "'.$filter_string.'" '.$maps." -shortest -strict -2 ${user_loc}/output_video.mp4 2>&1";
 echo $cmd;
 echo shell_exec($cmd);
 echo "\r";

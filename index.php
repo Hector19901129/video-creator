@@ -23,12 +23,12 @@
         return true;
 	}
 
-    delete_directory($user_id . '/images');
-    delete_directory($user_id . '/videos');
+    delete_directory($vid_dir.'/'.$user_id . '/images');
+    delete_directory($vid_dir.'/'.$user_id . '/videos');
 
     require 'fetching_images.php';
-    $image_path = "${user_id}/images/";
-    $video_path = "${user_id}/videos/";
+    $image_path = "${vid_dir}/${user_id}/images/";
+    $video_path = "${vid_dir}/${user_id}/videos/";
     $fi = new FilesystemIterator($image_path, FilesystemIterator::SKIP_DOTS);
     $iloop = iterator_count($fi);
     $images = array();
@@ -154,8 +154,8 @@
 						<div class="row" id="uploadContainer">
                             <?php	for ($i = 1; $i <= $iloop; ++$i) { ?>
                                 <div class="image-panel col-4 col-sm-3 mt-2" overlay-text="" effect="zoom-in">
-                                    <img src="<?php echo $user_id; ?>/images/pic<?php echo $i; ?>.jpg"
-                                        val="<?php echo $user_id; ?>/images/pic<?php echo $i; ?>.jpg"
+                                    <img src="<?php echo $image_path; ?>/pic<?php echo $i; ?>.jpg"
+                                        val="<?php echo $image_path; ?>/pic<?php echo $i; ?>.jpg"
                                         class="img-thumbnail" />
                                     <a class="edit-image" data-toggle="modal" href="#modal-image-edit">
                                         <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
@@ -176,7 +176,7 @@
                             <?php	for ($i = 1; $i <= $vloop; ++$i) { ?>
                                 <div class="image-panel col-4 col-sm-3 mt-2" overlay-text="" effect="zoom-in">
                                     <video class="img-thumbnail">
-                                        <source src="<?php echo $user_id; ?>/videos/vid<?php echo $i; ?>.mp4" type="video/mp4">
+                                        <source src="<?php echo $video_path; ?>/vid<?php echo $i; ?>.mp4" type="video/mp4">
                                         <div class="file-preview-other">
                                             <span class="file-other-icon"><i class="glyphicon glyphicon-file"></i></span>
                                         </div>
@@ -381,11 +381,15 @@
                                 <source src="" type="video/mp4"/>
                             </video>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group text-center">
+                            <button id="set-start-time" type="button" class="btn btn-default">Set Start</button>
+                            <button id="set-end-time" type="button" class="btn btn-default">Set End</button>
+                        </div>
+                        <div class="form-group col-md-6" style="padding-left: 0px; padding-right: 15px">
 							<label for="overlay-text">Start time(second)</label>
 							<input type="text" class="form-control" id="start-time" disabled>
                         </div>
-                        <div class="form-group">
+                        <div class="form-group col-md-6" style="padding-right: 0px">
 							<label for="overlay-text">End time(second)</label>
 							<input type="text" class="form-control" id="end-time" disabled>
 						</div>
@@ -396,8 +400,6 @@
 					</form>
 				</div>
 				<div class="modal-footer">
-                    <button id="set-start-time" type="button" class="btn btn-default">Set Start</button>
-                    <button id="set-end-time" type="button" class="btn btn-default">Set End</button>
 					<button id="animation-video-submit" type="submit" class="btn btn-default" data-dismiss="modal">Save</button>
 					<button type="submit" class="btn btn-default" data-dismiss="modal">Cancel</button>
 				</div>
@@ -410,6 +412,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-fileinput/4.5.2/js/fileinput.js"></script>
     <script src="js/video.min.js"></script>
     <script src="js/videojs-markers.min.js"></script>
+    <script>
+        var user_id = "<?=$user_id?>";
+        var vid_dir = "users";
+    </script>
 	<script src="js/app.js"></script>
 
 </body>

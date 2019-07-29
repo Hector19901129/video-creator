@@ -119,18 +119,20 @@ $(document).ready(function () {
   $('.edit-video').click(function (e) {
     el_vid = this.parentNode;
     var videoFile = $(this).prev().find("source").attr("src");
-    var start_time = parseFloat( $(el_vid).find('#saved-start-time').val() );
-    var end_time = parseFloat( $(el_vid).find('#saved-end-time').val() );
-    if (start_time === NaN || end_time === NaN) {
+    var s_time = $(el_vid).find('#saved-start-time').val();
+    var e_time = $(el_vid).find('#saved-end-time').val();
+    if (s_time === "" || e_time === "") {
         video.src({type: 'video/mp4', src: videoFile});
     } else {
+        var start_time = parseFloat( s_time );
+        var end_time = parseFloat( e_time );
         $("#start-time").val( parseFloat(start_time).toFixed(2) );
         $("#end-time").val( parseFloat(end_time).toFixed(2) );
         $('#overlay-video-text').val($(el_vid).find('.image-overlay-text > span').text());
         video.src({type: 'video/mp4', src: videoFile});
         setTimeout(function(){ 
             video.markers.reset([{ time: start_time, text: "start"}, { time: end_time, text: "end"}]);
-        }, 500);
+        }, 1000);
     }
   });
   
@@ -190,6 +192,8 @@ $(document).ready(function () {
     });
 
     let data = {
+      'user_id': user_id,
+      'vid_dir': vid_dir,
       'images': images,
       'top_bar_text': $('#top-bar-text').val(),
       'bottom_bar_text': $('#bottom-bar-text').val(),
