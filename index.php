@@ -154,8 +154,8 @@
 						<div class="row" id="uploadContainer">
                             <?php	for ($i = 1; $i <= $iloop; ++$i) { ?>
                                 <div class="image-panel col-4 col-sm-3 mt-2" overlay-text="" effect="zoom-in">
-                                    <img src="<?php echo $image_path; ?>/pic<?php echo $i; ?>.jpg"
-                                        val="<?php echo $image_path; ?>/pic<?php echo $i; ?>.jpg"
+                                    <img src="<?php echo $image_path; ?>pic<?php echo $i; ?>.jpg"
+                                        val="<?php echo $image_path; ?>pic<?php echo $i; ?>.jpg"
                                         class="img-thumbnail" />
                                     <a class="edit-image" data-toggle="modal" href="#modal-image-edit">
                                         <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
@@ -176,13 +176,16 @@
                             <?php	for ($i = 1; $i <= $vloop; ++$i) { ?>
                                 <div class="image-panel col-4 col-sm-3 mt-2" overlay-text="" effect="zoom-in">
                                     <video class="img-thumbnail">
-                                        <source src="<?php echo $video_path; ?>/vid<?php echo $i; ?>.mp4" type="video/mp4">
+                                        <source src="<?php echo $video_path; ?>vid<?php echo $i; ?>.mp4" type="video/mp4">
                                         <div class="file-preview-other">
                                             <span class="file-other-icon"><i class="glyphicon glyphicon-file"></i></span>
                                         </div>
                                     </video>
                                     <a class="edit-video" data-toggle="modal" href="#modal-video-edit" id="">
                                         <span class="glyphicon glyphicon-pencil" aria-hidden="true"></span>
+                                    </a>
+                                    <a class="remove-video">
+                                        <span class="glyphicon glyphicon-minus" aria-hidden="true"></span>
                                     </a>
                                     <a class="add-video">
                                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>

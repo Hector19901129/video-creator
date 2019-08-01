@@ -106,9 +106,16 @@ $(document).ready(function () {
   var el_vid;
   $('.add-video').click(function (e) {
     var itm = this.parentNode;
+    itm.classList.remove('selected');
     var cln = $(itm).clone(true, true);
     $("#uploadContainerVideo").append(cln);
   });
+
+  $('.remove-video').click(function (e) {
+    var itm = this.parentNode;
+    itm.remove();
+  });
+
 
   $('.edit-image').click(function (e) {
     el_img = this.parentNode;

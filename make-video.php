@@ -60,7 +60,7 @@ function get_zoompan_filter($animation, $seconds, $index, $result, $image_vid)
 
 function get_trim_filter($start_time, $end_time, $index, $result, $image_vid) {
     if($result === false){
-        $filter = "trim=start=".$start_time.":end=".$end_time.",setpts=PTS-STARTPTS".$image_vid;
+        $filter = "trim=start=".$start_time.":end=".$end_time.",setpts=PTS-STARTPTS, scale=700:700".$image_vid;
         return $filter;
     }
     else {
@@ -452,14 +452,15 @@ for ($i = 0; $i < count($param->images); ++$i) {
     }
 
     if (strpos($param->images[$i]->src, 'mp4') !== false) {
-        $cmd = "/usr/local/bin/ffmpeg -i ".$param->images[$i]->src;
-        $arr = explode(" ", $cmd);
+        $cmd = "ffmpeg -y -i ".$param->images[$i]->src ." 2>&1";
+        $output = shell_exec($cmd);
+        $arr = explode(" ", $output);
         foreach ($arr as $key => $value) {
-            if ($value == "fps") {
-                $frame_rate = $arr[$key - 1];
+            if ($value == "fps,") {
+                $frame_rate = (float)$arr[$key - 1];
             }
         }
-        var_dump($frame_rate);
+
         array_push($filters, '['.$src_image_index_array[$i].']'.get_trim_filter(
                 $param->images[$i]->start_time,
                 $param->images[$i]->end_time,
@@ -581,7 +582,7 @@ if ('Select audio file' != $param->select_sound) {
 $cmd = 'ffmpeg -y '.implode(' ', $inputs).' -filter_complex "'.$filter_string.'" '.$maps." -shortest -strict -2 ${user_loc}/output_video.mp4 2>&1";
 echo $cmd;
 echo shell_exec($cmd);
-echo "\r";
-echo $cmd;
+//echo "\r";
+//echo $cmd;
 
 die();
