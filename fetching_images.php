@@ -50,9 +50,9 @@ if (isset($_POST['fetch'])) {
         $i = 1;
         if (null != $images) {
             foreach ($images as $image) {
-                $cpm = "curl -0 ${image} -o ${user_id}/images/pic${i}.jpg";
+                $cpm = "curl -0 ${image} -o ${vid_dir}/${user_id}/images/pic${i}.jpg 2>&1";
                 echo $cpm;
-                exec($cpm);
+                echo shell_exec($cpm);
                 ++$i;
             }
 

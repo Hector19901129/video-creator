@@ -23,10 +23,11 @@
         return true;
 	}
 
+    require 'fetching_images.php';
+
     delete_directory($vid_dir.'/'.$user_id . '/images');
     delete_directory($vid_dir.'/'.$user_id . '/videos');
 
-    require 'fetching_images.php';
     $image_path = "${vid_dir}/${user_id}/images/";
     $video_path = "${vid_dir}/${user_id}/videos/";
     $fi = new FilesystemIterator($image_path, FilesystemIterator::SKIP_DOTS);
@@ -190,10 +191,10 @@
                                     <a class="add-video">
                                         <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
                                     </a>
-                                    <input type="hidden" value="" id="saved-start-time">
-                                    <input type="hidden" value="" id="saved-end-time">
-                                    <input type="hidden" value="" id="width">
-                                    <input type="hidden" value="" id="height">
+                                    <input type="input" value="" id="saved-start-time">
+                                    <input type="input" value="" id="saved-end-time">
+                                    <input type="input" value="" id="width">
+                                    <input type="input" value="" id="height">
                                     <div class="wrapper">
                                         <div class="wraperNumber">1</div>
                                     </div>

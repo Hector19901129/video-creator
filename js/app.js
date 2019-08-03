@@ -135,24 +135,28 @@ $(document).ready(function () {
 
   $('.edit-video').click(function (e) {
     el_vid = this.parentNode;
-    $(el_vid).find('#width').val( $(el).find("video")[0].videoWidth );
-    $(el_vid).find('#height').val( $(el).find("video")[0].videoHeight );
+    $(el_vid).find('#width').val( $(el_vid).find("video")[0].videoWidth );
+    $(el_vid).find('#height').val( $(el_vid).find("video")[0].videoHeight );
     var videoFile = $(this).prev().find("source").attr("src");
     var s_time = $(el_vid).find('#saved-start-time').val();
     var e_time = $(el_vid).find('#saved-end-time').val();
-    if (s_time === "" || e_time === "") {
-        video.src({type: 'video/mp4', src: videoFile});
-    } else {
-        var start_time = parseFloat( s_time );
-        var end_time = parseFloat( e_time );
-        $("#start-time").val( parseFloat(start_time).toFixed(2) );
-        $("#end-time").val( parseFloat(end_time).toFixed(2) );
-        $('#overlay-video-text').val($(el_vid).find('.image-overlay-text > span').text());
-        video.src({type: 'video/mp4', src: videoFile});
-        setTimeout(function(){ 
-            video.markers.reset([{ time: start_time, text: "start"}, { time: end_time, text: "end"}]);
-        }, 1000);
+
+    if (s_time === "") {
+        s_time = 0;
     }
+    if(e_time === "") {
+        e_time = 0;
+    }
+
+    var start_time = parseFloat( s_time );
+    var end_time = parseFloat( e_time );
+    $("#start-time").val( parseFloat(start_time).toFixed(2) );
+    $("#end-time").val( parseFloat(end_time).toFixed(2) );
+    $('#overlay-video-text').val($(el_vid).find('.image-overlay-text > span').text());
+    video.src({type: 'video/mp4', src: videoFile});
+    setTimeout(function(){ 
+        video.markers.reset([{ time: start_time, text: "start"}, { time: end_time, text: "end"}]);
+    }, 1000);
   });
   
   $('#animation-submit').click(function(e) {

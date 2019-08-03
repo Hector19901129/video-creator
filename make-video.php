@@ -456,7 +456,7 @@ for ($i = 0; $i < count($param->images); ++$i) {
     }
 
     if (strpos($param->images[$i]->src, 'mp4') !== false) {
-        $cmd = "ffmpeg -y -i ".$param->images[$i]->src ." 2>&1";
+        $cmd = "/usr/local/bin/ffmpeg -y -i ".$param->images[$i]->src ." 2>&1";
         $output = shell_exec($cmd);
         $arr = explode(" ", $output);
         foreach ($arr as $key => $value) {
@@ -585,7 +585,7 @@ if ('Select audio file' != $param->select_sound) {
 }
 
 
-$cmd = 'ffmpeg -y '.implode(' ', $inputs).' -filter_complex "'.$filter_string.'" '.$maps." -shortest -strict -2 ${user_loc}/output_video.mp4 2>&1";
+$cmd = '/usr/local/bin/ffmpeg -y '.implode(' ', $inputs).' -filter_complex "'.$filter_string.'" '.$maps." -shortest -strict -2 ${user_loc}/output_video.mp4 2>&1";
 echo $cmd;
 echo shell_exec($cmd);
 //echo "\r";
