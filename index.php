@@ -192,6 +192,8 @@
                                     </a>
                                     <input type="hidden" value="" id="saved-start-time">
                                     <input type="hidden" value="" id="saved-end-time">
+                                    <input type="hidden" value="" id="width">
+                                    <input type="hidden" value="" id="height">
                                     <div class="wrapper">
                                         <div class="wraperNumber">1</div>
                                     </div>

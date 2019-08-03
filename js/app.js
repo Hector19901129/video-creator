@@ -106,14 +106,24 @@ $(document).ready(function () {
   var el_vid;
   $('.add-video').click(function (e) {
     var itm = this.parentNode;
-    itm.classList.remove('selected');
     var cln = $(itm).clone(true, true);
     $("#uploadContainerVideo").append(cln);
+    console.log($("#uploadContainerVideo > :last-child"));
+    $("#uploadContainerVideo > :last-child").removeClass("selected");
   });
 
   $('.remove-video').click(function (e) {
-    var itm = this.parentNode;
-    itm.remove();
+    var el = this.parentNode;
+    if ( el.classList.contains('selected') ) {
+        let index = parseInt($(el).find('.wrapper > div')[0].innerText);
+        $('.selected > .wrapper > div').each(function () {
+          let i = parseInt(this.innerText);
+          if (i > index) {
+            $(this).text(i - 1);
+          }
+        });
+    }
+    el.remove();
   });
 
 
@@ -125,6 +135,8 @@ $(document).ready(function () {
 
   $('.edit-video').click(function (e) {
     el_vid = this.parentNode;
+    $(el_vid).find('#width').val( $(el).find("video")[0].videoWidth );
+    $(el_vid).find('#height').val( $(el).find("video")[0].videoHeight );
     var videoFile = $(this).prev().find("source").attr("src");
     var s_time = $(el_vid).find('#saved-start-time').val();
     var e_time = $(el_vid).find('#saved-end-time').val();
@@ -193,6 +205,8 @@ $(document).ready(function () {
                 'src': $(this).find('source').attr('src'),
                 'start_time': $(this).find('#saved-start-time').val(),
                 'end_time': $(this).find('#saved-end-time').val(),
+                'width': $(this).find('#width').val(),
+                'height': $(this).find('#height').val(),
                 'overlay_text': $(this).find('.image-overlay-text > span').text()
             };
         }

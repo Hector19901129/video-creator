@@ -58,13 +58,17 @@ function get_zoompan_filter($animation, $seconds, $index, $result, $image_vid)
     }
 }
 
-function get_trim_filter($start_time, $end_time, $index, $result, $image_vid) {
+function get_trim_filter($start_time, $end_time, $width, $height, $index, $result, $image_vid) {
+    // expected that height is smaller than width always
+    $w = $height; 
+    $x_padding = ($width - $height) / 2;
+
     if($result === false){
-        $filter = "trim=start=".$start_time.":end=".$end_time.",setpts=PTS-STARTPTS, scale=700:700".$image_vid;
+        $filter = "trim=start=".$start_time.":end=".$end_time.",setpts=PTS-STARTPTS,crop=".$w.":".$w.":".$x_padding.":0, scale=700:700".$image_vid;
         return $filter;
     }
     else {
-        $filter = "trim=start=".$start_time.":end=".$end_time.",setpts=PTS-STARTPTS[zoompan".$index."]";
+        $filter = "trim=start=".$start_time.":end=".$end_time.",setpts=PTS-STARTPTS,crop=".$w.":".$w.":".$x_padding.":0, scale=700:700[zoompan".$index."]";
         return $filter;
     }
 }
@@ -464,6 +468,8 @@ for ($i = 0; $i < count($param->images); ++$i) {
         array_push($filters, '['.$src_image_index_array[$i].']'.get_trim_filter(
                 $param->images[$i]->start_time,
                 $param->images[$i]->end_time,
+                $param->images[$i]->width,
+                $param->images[$i]->height,
                 $i, $result, $image_vid
             )
         );
